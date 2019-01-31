@@ -1,7 +1,7 @@
 import os
 import sys
 import pyltr
-import pickle
+from writer.writer import *
 
 def training_ltr_model(ltr_train_file_path, ltr_validation_file_path, ltr_model_file_path):
 
@@ -27,9 +27,4 @@ def training_ltr_model(ltr_train_file_path, ltr_validation_file_path, ltr_model_
                 verbose=1,
         )
         model.fit(TX, Ty, Tqids, monitor=monitor)
-        pickle.dump(model, open(ltr_model_file_path, 'wb'))
-
-def loading_ltr_model(ltr_model_file_path):
-
-    model = pickle.load(open(ltr_model_file_path, 'rb'))
-    return model
+        write_model(model, ltr_model_file_path)

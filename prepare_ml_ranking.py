@@ -2,9 +2,7 @@ import os
 import sys
 import operator
 
-from loader.topics import *
-from loader.features import *
-from loader.qrels import *
+from reader.reader import *
 from tools.normalization import *
 
 def get_topics_list(path):
