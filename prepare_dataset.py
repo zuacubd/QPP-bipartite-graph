@@ -1,30 +1,24 @@
 import os
 import sys
 
-from loader.topics import *
-from loader.features import *
-from loader.qrels import *
+from reader.reader import get_topics, get_qrels, get_topics_docs_ltr_features
 from tools.normalization import *
 
 
 def prepare_dataset(topics_path, query_doc_features_path, qrels_file_path, ltr_train_file_path, ltr_test_file_path):
 
-        topics, query_ids = get_topics(topics_path)
-        queryid_docid_rel = get_qrels(qrels_file_path)
-        queryid_docid_features = get_query_doc_features(query_doc_features_path)
+        topics, topic_ids = get_topics(topics_path)
+        topics_docid_rel = get_qrels(qrels_file_path)
+        topics_docs, topics_docid_features = get_topics_docs_ltr_features(query_doc_features_path)
 
-        #query_ids = sorted(list(queryid_docid_features.keys()), key=int)
-        #query_ids = sorted(topics.keys(), key=str.lower)
-        print ("total topics: ", query_ids)
+        print ("total topics: ", topic_ids)
 
         #training features
         with open(ltr_train_file_path, 'w') as fw:
 
-            for query_id in query_ids:
-                #query_id = query_ids[qdx]
-
-                docid_rel = queryid_docid_rel.get(query_id)
-                docid_features = queryid_docid_features.get(query_id)
+            for topic_id in topic_ids:
+                docid_rel = topics_docid_rel.get(topic_id)
+                docid_features = topics_docid_features.get(topic_id)
 
                 if docid_rel is None:
                     continue
@@ -55,9 +49,9 @@ def prepare_dataset(topics_path, query_doc_features_path, qrels_file_path, ltr_t
 
         #validation features
         with open(ltr_test_file_path, 'w') as fw:
-            for query_id in query_ids:
-                docid_rel = queryid_docid_rel.get(query_id)
-                docid_features = queryid_docid_features.get(query_id)
+            for topic_id in topic_ids:
+                docid_rel = topics_docid_rel.get(topic_id)
+                docid_features = topics_docid_features.get(topic_id)
 
                 if docid_rel is None:
                     docid_rel = {}
