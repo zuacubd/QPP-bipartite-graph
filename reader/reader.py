@@ -95,6 +95,10 @@ def get_topics_docs_ltr_features(features_path):
         topics_docid_features = {}
         topics_docids = {}
 
+        line = lines[0]
+        parts = line.rstrip().split("\t")
+        features_id = [parts[i] for i in range(2, len(parts))]
+
         for idx in range(1, len(lines)):
             line = lines[idx]
             parts = line.rstrip().split("\t")
@@ -119,7 +123,7 @@ def get_topics_docs_ltr_features(features_path):
             docids.append(doc_id)
             topics_docids[topic_id] = docids
 
-        return topics_docids, topics_docids_features
+        return topics_docids, features_id, topics_docids_features
 
 
 def loading_pkl_model(model_path):
