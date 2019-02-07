@@ -49,7 +49,7 @@ def get_UV_matrix(U0, V0, docids, features_id, docids_features):
                 feature = features[f]
                 docids_feature[docid] = feature
 
-            ranked_docids = get_descending(docids_feature)
+            ranked_docids, ranked_docids_score = get_descending(docids_feature)
             for r in range(0, len(ranked_docids)):
                 rdocid = ranked_docids[r]
                 index = docids.index(rdocid)
@@ -59,7 +59,16 @@ def get_UV_matrix(U0, V0, docids, features_id, docids_features):
         return M
 
 
-def get_predictors():
+def get_predictors(docids_imp):
+        '''
+        Computing QPP predictors for the re-estimated documents' score
+        '''
+        qpp_mean = np.mean(docids_imp)
+        qpp_std = np.std(docids_imp)
+        qpp_var = np.var(docids_imp)
+
+        return [qpp_mean, qpp_std, qpp_var]
+
 
 def get_BGP(topics_id_title, topics_id, topics_docids_rankscore, topics_docids, features_id, topics_docids_features):
         '''
@@ -84,27 +93,22 @@ def get_BGP(topics_id_title, topics_id, topics_docids_rankscore, topics_docids, 
 
         return topics_bgp
 
-def write_features(topics_list, topics_nqc, topics_wig, topics_qf, features_file_path):
+
+def write_features(topics_id, topics_bqp, features_file_path):
         '''
         Write the query performan predictor or features
         '''
         with open(features_file_path, 'w') as writer:
-            writer.write('query_id\tNQC\tWIG\tQF\n')
+
+            writer.write('query_id\tqpp_mean\tqpp_std\tqpp_var\n')
             line =''
-            for topic in topics_list:
-                writer.write(topic)
+            for topic_id in topics_id:
+                writer.write(topic_id)
 
-                nqc = topics_nqc.get(topic)
-                writer.write('\t')
-                writer.write(str(nqc))
-
-                wig = topics_wig.get(topic)
-                writer.write('\t')
-                writer.write(str(wig))
-
-                qf = topics_qf.get(topic)
-                writer.write('\t')
-                writer.write(str(qf))
+                predictors = topics_bqp.get(topic_id)
+                for predictor in predictors:
+                    writer.write('\t')
+                    writer.write(str(predictor))
                 writer.write('\n')
 
 
@@ -156,6 +160,7 @@ def parse_args():
         predictor_path = args.predictor_path
         print(predictor_path)
 
+
 print("Starting ... ")
 parse_args()
 
@@ -176,5 +181,5 @@ topics_bgp = get_BGP(topics_id_title, topics_id, topics_docid_rankscore, topics_
 print ("Done")
 
 print("Writing features to file ....")
-write_features(topics, topics_nqc, topics_wig, topics_qf, features_file_path)
+write_features(topics_id, topics_bgp, predictor_path)
 print("Done")
