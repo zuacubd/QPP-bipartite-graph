@@ -1,2 +1,2 @@
-# bg-ltr-qpp
-Query performance prediction using Bipartite graph and query-dependent features
+# qpp-bipartite-graph
+Query performance prediction (QPP) using a bipartite graph and query-dependent features
